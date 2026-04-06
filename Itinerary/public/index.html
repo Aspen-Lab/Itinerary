@@ -62,6 +62,20 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans SC',-apple-system,'
 .tip-icon{font-size:16px;flex-shrink:0;width:22px;text-align:center}
 .cover-illust{width:100%;border-radius:16px;margin-top:4px}
 .cover-caption{text-align:center;font-size:13px;color:var(--dim);margin:14px 0 4px;letter-spacing:.5px}
+.install-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:14px 0;margin-top:20px;border:1.5px solid var(--border);border-radius:12px;background:var(--card);font-family:inherit;font-size:14px;font-weight:500;color:var(--text);cursor:pointer;transition:background .2s}
+.install-btn:active{background:#F0EEE9}
+.install-btn svg{flex-shrink:0}
+.install-overlay{position:fixed;inset:0;z-index:999;background:rgba(0,0,0,.5);display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity .25s}
+.install-overlay.show{opacity:1;pointer-events:auto}
+.install-sheet{background:#fff;border-radius:20px 20px 0 0;padding:28px 24px calc(24px + var(--safe-bot));max-width:440px;width:100%;transform:translateY(100%);transition:transform .3s cubic-bezier(.4,0,.2,1)}
+.install-overlay.show .install-sheet{transform:translateY(0)}
+.install-sheet h3{font-size:16px;font-weight:600;text-align:center;margin-bottom:20px}
+.install-step{display:flex;gap:14px;padding:14px 0;align-items:flex-start}
+.install-step+.install-step{border-top:1px dashed #E8E2D8}
+.install-num{width:26px;height:26px;border-radius:50%;background:var(--accent);color:#fff;font-size:13px;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.install-step-text{font-size:14px;line-height:1.6;color:var(--text)}
+.install-step-text strong{font-weight:600}
+.install-close{width:100%;padding:14px;margin-top:20px;border:none;border-radius:12px;background:var(--text);color:#fff;font-family:inherit;font-size:15px;font-weight:500;cursor:pointer}
 .swipe-hint{text-align:center;margin-top:24px;font-size:12px;color:var(--light);animation:pulse 2s ease-in-out infinite}
 @keyframes pulse{0%,100%{opacity:.4}50%{opacity:1}}
 
@@ -207,6 +221,12 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans SC',-apple-system,'
 
   <div class="cover-caption">洛杉矶 → 亚特兰大 → 西雅图 → 回家</div>
 
+  <!-- Install button (hidden if already in standalone) -->
+  <button class="install-btn" id="installBtn" onclick="document.getElementById('installOverlay').classList.add('show')">
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 2.5v10M6.5 9l3.5 3.5L13.5 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M3.5 13.5v2a1.5 1.5 0 001.5 1.5h10a1.5 1.5 0 001.5-1.5v-2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+    安装到主屏幕
+  </button>
+
   <div class="tips">
     <h3>📱 使用小贴士</h3>
     <div class="tip-row"><span class="tip-icon">👆</span><span><strong>左右滑动</strong>翻页看每天的详细安排</span></div>
@@ -345,7 +365,22 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans SC',-apple-system,'
   <div class="dots" id="ds"></div>
 </div>
 
+<!-- Install overlay -->
+<div class="install-overlay" id="installOverlay" onclick="if(event.target===this)this.classList.remove('show')">
+  <div class="install-sheet">
+    <h3>安装到主屏幕</h3>
+    <div class="install-step"><div class="install-num">1</div><div class="install-step-text">点击 Safari 底部的 <strong>分享按钮</strong> <svg width="18" height="18" viewBox="0 0 18 18" style="vertical-align:-3px" fill="none"><path d="M9 1.5v10M5.5 5L9 1.5 12.5 5" stroke="#3B6FA0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 10.5v4.5a1.5 1.5 0 001.5 1.5h9a1.5 1.5 0 001.5-1.5v-4.5" stroke="#3B6FA0" stroke-width="1.5" stroke-linecap="round"/></svg></div></div>
+    <div class="install-step"><div class="install-num">2</div><div class="install-step-text">向下滑动，找到 <strong>"添加到主屏幕"</strong></div></div>
+    <div class="install-step"><div class="install-num">3</div><div class="install-step-text">点击右上角 <strong>"添加"</strong>，就可以像 App 一样使用了</div></div>
+    <button class="install-close" onclick="document.getElementById('installOverlay').classList.remove('show')">知道了</button>
+  </div>
+</div>
+
 <script>
+// Hide install button if already in standalone mode
+if(window.navigator.standalone||window.matchMedia('(display-mode:standalone)').matches){
+  document.getElementById('installBtn').style.display='none';
+}
 const tk=document.getElementById('tk'),dk=document.getElementById('dk'),ds=document.getElementById('ds'),pn=document.getElementById('pn');
 const N=tk.children.length;let c=0,sx=0,dx=0,dr=false;
 for(let i=0;i<N;i++){const d=document.createElement('div');d.className='dot'+(i===0?' on':'');ds.appendChild(d)}
