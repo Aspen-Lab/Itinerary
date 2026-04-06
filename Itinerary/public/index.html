@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="智怡毕业典礼">
+<meta name="theme-color" content="#F7F5F2">
+<title>智怡毕业典礼 · 行程</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#F7F5F2;--card:#FFFFFF;--text:#1A1A1A;--dim:#888;--light:#B0B0B0;
+  --border:#E8E6E2;--accent:#D4563A;--accent-bg:#FFF5F2;
+  --green:#2D8B55;--green-bg:#F0F8F3;--blue:#3B6FA0;--blue-bg:#F0F5FA;
+  --warm:#F5F0E8;--safe-top:env(safe-area-inset-top);--safe-bot:env(safe-area-inset-bottom);
+}
+html,body{height:100%;overflow:hidden;font-family:'Noto Sans SC',-apple-system,'PingFang SC',sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased}
+
+.app{height:100%;display:flex;flex-direction:column;padding-top:var(--safe-top)}
+.nav{display:flex;align-items:center;justify-content:space-between;padding:12px 20px 8px;flex-shrink:0}
+.nav-title{font-size:13px;font-weight:500;color:var(--dim)}
+.nav-page{font-size:12px;color:var(--light);font-variant-numeric:tabular-nums}
+
+.deck{flex:1;position:relative;overflow:hidden;touch-action:pan-y}
+.card-track{display:flex;height:100%;transition:transform .35s cubic-bezier(.4,0,.2,1);will-change:transform}
+.card-track.dragging{transition:none}
+.card-frame{flex:0 0 100%;height:100%;padding:0 16px;overflow-y:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.card-frame::-webkit-scrollbar{display:none}
+.card-inner{max-width:440px;margin:0 auto;padding-bottom:calc(80px + var(--safe-bot))}
+
+.dots{display:flex;justify-content:center;gap:6px;padding:10px 0 calc(12px + var(--safe-bot));flex-shrink:0}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--border);transition:all .3s}
+.dot.on{background:var(--accent);width:20px;border-radius:4px}
+
+/* Cover */
+.cover{padding-top:28px}
+.cover-icon{font-size:52px;text-align:center;margin-bottom:16px}
+.cover h1{font-size:24px;font-weight:700;text-align:center;letter-spacing:.3px;line-height:1.4}
+.cover .sub{font-size:14px;color:var(--dim);text-align:center;margin-top:4px}
+.cover-divider{height:1px;background:var(--border);margin:24px 0}
+
+.tl{display:flex;flex-direction:column}
+.tl-row{display:flex;gap:12px}
+.tl-dot-col{display:flex;flex-direction:column;align-items:center;width:14px;flex-shrink:0}
+.tl-dot{width:10px;height:10px;border-radius:50%;border:2px solid var(--border);flex-shrink:0;margin-top:4px}
+.tl-dot.a{border-color:var(--accent);background:var(--accent-bg)}
+.tl-dot.g{border-color:var(--green);background:var(--green-bg)}
+.tl-dot.b{border-color:var(--blue);background:var(--blue-bg)}
+.tl-line{width:1.5px;flex:1;background:var(--border);min-height:8px}
+.tl-body{padding:0 0 18px;flex:1}
+.tl-date{font-size:13px;font-weight:600;line-height:1.2}
+.tl-desc{font-size:12px;color:var(--dim);margin-top:2px;line-height:1.5}
+
+.tips{background:var(--warm);border-radius:14px;padding:18px;margin-top:20px}
+.tips h3{font-size:14px;font-weight:600;margin-bottom:12px}
+.tip-row{display:flex;gap:10px;padding:7px 0;font-size:13px;line-height:1.5;color:var(--dim)}
+.tip-row+.tip-row{border-top:1px dashed #E8E2D8}
+.tip-icon{font-size:16px;flex-shrink:0;width:22px;text-align:center}
+.swipe-hint{text-align:center;margin-top:24px;font-size:12px;color:var(--light);animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:.4}50%{opacity:1}}
+
+/* Day cards */
+.dc{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;margin-bottom:12px}
+.dh{display:flex;align-items:baseline;gap:8px;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid #F0EEE9}
+.dd{font-size:16px;font-weight:600}
+.dw{font-size:13px;color:var(--dim)}
+.dt{margin-left:auto;font-size:11px;font-weight:500;padding:2px 10px;border-radius:20px}
+.t-la{color:var(--blue);background:var(--blue-bg)}
+.t-atl{color:var(--accent);background:var(--accent-bg)}
+.t-sea{color:var(--green);background:var(--green-bg)}
+.t-home{color:#9B6B3D;background:#FDF6ED}
+
+.ev{display:flex;gap:12px;padding:8px 0}
+.ev+.ev{border-top:1px dashed #F0EEE9}
+.et{font-size:12px;color:var(--dim);min-width:44px;padding-top:1px;font-variant-numeric:tabular-nums}
+.eb{flex:1}
+.en{font-size:14px;font-weight:500;margin-bottom:2px}
+.ed{font-size:12px;color:var(--dim);line-height:1.6}
+
+.fl{background:var(--warm);border-radius:10px;padding:14px;margin:6px 0}
+.fr{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.fc{font-size:20px;font-weight:700;letter-spacing:1px}
+.fa{font-size:13px;color:var(--light)}
+.fi{font-size:11px;color:var(--dim);line-height:1.7}
+.fi a{color:var(--blue);text-decoration:none;font-weight:500}
+
+.hl{background:var(--accent-bg);border:1.5px solid var(--accent);border-radius:10px;padding:14px;margin:6px 0}
+.hl b{font-size:14px;font-weight:600;color:var(--accent);display:block;margin-bottom:4px}
+.hl p{font-size:12px;color:#6B4A40;line-height:1.6;margin:0}
+
+.nt{background:var(--green-bg);border-radius:10px;padding:12px 14px;margin:6px 0}
+.nt b{font-size:13px;font-weight:500;color:var(--green);display:block;margin-bottom:2px}
+.nt p{font-size:12px;color:#4A6B55;line-height:1.6;margin:0}
+
+.ab{background:#F8F5F0;border:1px solid var(--border);border-radius:10px;padding:14px;margin:6px 0}
+.ab b{font-size:13px;font-weight:600;display:block;margin-bottom:4px}
+.ab strong{font-size:13px}
+.ab p{font-size:11px;color:var(--dim);line-height:1.7;margin:2px 0 0}
+.ab a{color:var(--blue);text-decoration:none;font-weight:500}
+
+.ic{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px;margin-bottom:12px}
+.ic h3{font-size:14px;font-weight:600;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid #F0EEE9}
+.ir{display:flex;justify-content:space-between;padding:5px 0;font-size:13px}
+.ir+.ir{border-top:1px dashed #F0EEE9}
+.il{color:var(--dim)}
+.iv{font-weight:500;text-align:right}
+.pt{font-size:15px;font-weight:600;margin-bottom:14px;padding-top:8px}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="nav">
+    <span class="nav-title">智怡毕业典礼 · 行程</span>
+    <span class="nav-page" id="pn">1 / 10</span>
+  </div>
+  <div class="deck" id="dk">
+    <div class="card-track" id="tk">
+
+<!-- PAGE 0: COVER -->
+<div class="card-frame"><div class="card-inner cover">
+  <div class="cover-icon">🎓</div>
+  <h1>智怡毕业典礼<br>出行安排</h1>
+  <div class="sub">2026年5月23日 — 6月5日</div>
+  <div class="cover-divider"></div>
+  <div class="tl">
+    <div class="tl-row"><div class="tl-dot-col"><div class="tl-dot b"></div><div class="tl-line"></div></div><div class="tl-body"><div class="tl-date">5/23 — 27 · 洛杉矶</div><div class="tl-desc">到达 LA，倒时差、休息</div></div></div>
+    <div class="tl-row"><div class="tl-dot-col"><div class="tl-dot b"></div><div class="tl-line"></div></div><div class="tl-body"><div class="tl-date">5/28 · 飞亚特兰大</div><div class="tl-desc">LAX → ATL · DL 528 · 11:45am<br>Aspen 汇合，三人一起飞</div></div></div>
+    <div class="tl-row"><div class="tl-dot-col"><div class="tl-dot a"></div><div class="tl-line"></div></div><div class="tl-body"><div class="tl-date">5/29 · 毕业典礼 🎓</div><div class="tl-desc">SCAD 亚特兰大校区 · 上午 11:30</div></div></div>
+    <div class="tl-row"><div class="tl-dot-col"><div class="tl-dot"></div><div class="tl-line"></div></div><div class="tl-body"><div class="tl-date">5/30 — 31 · 亚特兰大游玩</div><div class="tl-desc">5/31 Aspen 先回西雅图上班</div></div></div>
+    <div class="tl-row"><div class="tl-dot-col"><div class="tl-dot g"></div><div class="tl-line"></div></div><div class="tl-body"><div class="tl-date">6/1 · 飞西雅图</div><div class="tl-desc">ATL → SEA · 智怡陪你们飞<br>到达后 Aspen 接你们</div></div></div>
+    <div class="tl-row"><div class="tl-dot-col"><div class="tl-dot g"></div><div class="tl-line"></div></div><div class="tl-body"><div class="tl-date">6/2 — 4 · 西雅图游玩</div><div class="tl-desc">住 Bellevue Airbnb · Aspen 带你们玩</div></div></div>
+    <div class="tl-row"><div class="tl-dot-col"><div class="tl-dot a"></div></div><div class="tl-body"><div class="tl-date">6/5 · 回上海 ✈️</div><div class="tl-desc">Aspen 送你们去机场</div></div></div>
+  </div>
+  <div class="tips">
+    <h3>📱 使用小贴士</h3>
+    <div class="tip-row"><span class="tip-icon">👆</span><span><strong>左右滑动</strong>翻页看每天的详细安排</span></div>
+    <div class="tip-row"><span class="tip-icon">🔗</span><span>蓝色链接可以<strong>点击打开</strong>（Airbnb、航班等）</span></div>
+    <div class="tip-row"><span class="tip-icon">📌</span><span>添加到主屏幕：Safari 底部 <strong>分享 → 添加到主屏幕</strong></span></div>
+    <div class="tip-row"><span class="tip-icon">🌐</span><span>全程有 Aspen 和智怡陪同，<strong>语言不用担心</strong></span></div>
+  </div>
+  <div class="swipe-hint">← 向左滑动开始 →</div>
+</div></div>
+
+<!-- PAGE 1: LA -->
+<div class="card-frame"><div class="card-inner">
+  <div class="pt">第一段 · 洛杉矶</div>
+  <div class="dc">
+    <div class="dh"><span class="dd">5月23日</span><span class="dw">周六</span><span class="dt t-la">洛杉矶</span></div>
+    <div class="ev"><div class="et"></div><div class="eb"><div class="en">到达洛杉矶</div><div class="ed">先在洛杉矶住几天，倒时差、处理事务</div></div></div>
+  </div>
+  <div class="dc">
+    <div class="dh"><span class="dd">5月23 — 27日</span><span class="dw">周六 — 周三</span><span class="dt t-la">洛杉矶</span></div>
+    <div class="ev"><div class="et">5天</div><div class="eb"><div class="en">在洛杉矶休息、倒时差</div><div class="ed">调整作息，处理需要办的事<br>不用赶行程，好好休息</div></div></div>
+  </div>
+</div></div>
+
+<!-- PAGE 2: 5/28 FLY ATL -->
+<div class="card-frame"><div class="card-inner">
+  <div class="pt">第二段 · 出发去亚特兰大</div>
+  <div class="dc">
+    <div class="dh"><span class="dd">5月28日</span><span class="dw">周四</span><span class="dt t-la">LAX → ATL</span></div>
+    <div class="ev"><div class="et">上午</div><div class="eb"><div class="en">出发去机场</div><div class="ed">航班 11:45 起飞，建议<strong>上午 9:30 前到达</strong>洛杉矶机场（LAX 3号航站楼）<br>Aspen 从西雅图飞过来和你们汇合，一起飞</div></div></div>
+    <div class="ev"><div class="et"></div><div class="eb"><div class="en">一起从洛杉矶飞亚特兰大</div><div class="ed">三个人一起走，不用担心语言问题</div>
+      <div class="fl"><div class="fr"><span class="fc">LAX</span><span class="fa">✈ ——→</span><span class="fc">ATL</span></div><div class="fi">洛杉矶 → 亚特兰大 · 直飞<br>达美航空 Delta · DL 528<br>5月28日 · 上午 11:45 起飞 → 晚上 6:57 到达<br>（飞行约 4.5 小时，有 3 小时时差）<br>LAX 3号航站楼 → ATL S航站楼<br><br><a href="https://www.google.com/travel/flights/search?tfs=CBwQAhopEgoyMDI2LTA1LTI4agwIAhIIL20vMHl6dnNyDAgCEggvbS8wMTN5cUABSAFwAYIBCwj___________8BQAFIAZgBAQ&hl=en">在 Google Flights 查看 →</a></div></div>
+    </div></div>
+    <div class="ev"><div class="et">晚上</div><div class="eb"><div class="en">到达亚特兰大，入住 Airbnb</div><div class="ed">Aspen 带你们从机场打车去住处</div>
+      <div class="ab"><b>🏠 住宿：亚特兰大 Airbnb</b><strong>Inviting 2BR close to Beltline w/ patio</strong><p>Midtown 区 · 独栋小屋 · 带院子<br>2 间卧室 · 2 间卫生间 · 可住 5 人<br>房东：StayATL · 评分 5.0 ★（11条评价）<br><br>入住：5月28日 · 退房：6月1日（共 4 晚）<br><br><a href="https://www.airbnb.com/rooms/1506648787317449074?adults=3&check_in=2026-05-28&check_out=2026-06-01">查看 Airbnb 详情 →</a></p></div>
+    </div></div>
+  </div>
+</div></div>
+
+<!-- PAGE 3: 5/29 GRADUATION -->
+<div class="card-frame"><div class="card-inner">
+  <div class="pt">第三段 · 毕业典礼</div>
+  <div class="dc">
+    <div class="dh"><span class="dd">5月29日</span><span class="dw">周五</span><span class="dt t-atl">亚特兰大</span></div>
+    <div class="ev"><div class="et">上午</div><div class="eb">
+      <div class="hl"><b>🎓 智怡毕业典礼</b><p>上午 11:30 开始<br>SCAD（萨凡纳艺术设计学院）亚特兰大校区<br>建议提前 1 小时到场找座位</p></div>
+    </div></div>
+    <div class="ev"><div class="et">下午</div><div class="eb"><div class="en">和智怡一起庆祝 + 拍照</div><div class="ed">典礼结束后自由活动，一起吃饭</div></div></div>
+  </div>
+</div></div>
+
+<!-- PAGE 4: 5/30 FREE -->
+<div class="card-frame"><div class="card-inner">
+  <div class="pt">亚特兰大游玩</div>
+  <div class="dc">
+    <div class="dh"><span class="dd">5月30日</span><span class="dw">周六</span><span class="dt t-atl">亚特兰大</span></div>
+    <div class="ev"><div class="et">全天</div><div class="eb"><div class="en">亚特兰大自由活动</div><div class="ed">和智怡、Aspen 一起逛逛市区、吃当地美食<br>具体安排到了再定，不赶时间</div></div></div>
+  </div>
+</div></div>
+
+<!-- PAGE 5: 5/31 ASPEN LEAVES -->
+<div class="card-frame"><div class="card-inner">
+  <div class="pt">亚特兰大 · 最后一天</div>
+  <div class="dc">
+    <div class="dh"><span class="dd">5月31日</span><span class="dw">周日</span><span class="dt t-atl">亚特兰大</span></div>
+    <div class="ev"><div class="et">白天</div><div class="eb"><div class="en">继续在亚特兰大游玩</div><div class="ed">和智怡一起，不着急</div></div></div>
+    <div class="ev"><div class="et"></div><div class="eb">
+      <div class="nt"><b>✈️ Aspen 先回西雅图</b><p>Aspen 需要周一上班，所以周日先飞回西雅图准备。你们和智怡在亚特兰大多住一晚，明天晚上再飞西雅图。</p></div>
+    </div></div>
+  </div>
+</div></div>
+
+<!-- PAGE 6: 6/1 FLY SEA -->
+<div class="card-frame"><div class="card-inner">
+  <div class="pt">第四段 · 飞西雅图</div>
+  <div class="dc">
+    <div class="dh"><span class="dd">6月1日</span><span class="dw">周一</span><span class="dt t-sea">ATL → SEA</span></div>
+    <div class="ev"><div class="et">白天</div><div class="eb"><div class="en">Airbnb 退房，收拾行李</div><div class="ed">退房后可以寄存行李再逛逛</div></div></div>
+    <div class="ev"><div class="et">傍晚</div><div class="eb"><div class="en">和智怡一起飞西雅图</div><div class="ed">智怡陪你们坐飞机，不用担心</div>
+      <div class="fl"><div class="fr"><span class="fc">ATL</span><span class="fa">✈ ——→</span><span class="fc">SEA</span></div><div class="fi">亚特兰大 → 西雅图 · 直飞<br>阿拉斯加航空 Alaska Airlines<br>6月1日 · 傍晚出发（飞行约 5.5 小时）<br>航班号确认后更新<br><br><a href="https://www.google.com/travel/flights/search?tfs=CBwQAhopEgoyMDI2LTA2LTAxagwIAhIIL20vMDEzeXFyDAgCEggvbS8wZDlqcUABSAFwAYIBCwj___________8BQAFIAZgBAQ&hl=en">在 Google Flights 查看 →</a></div></div>
+    </div></div>
+    <div class="ev"><div class="et">晚上</div><div class="eb"><div class="en">到达西雅图，入住 Bellevue Airbnb</div><div class="ed">Aspen 到机场接你们，一起打车去民宿</div>
+      <div class="ab"><b>🏠 住宿：Bellevue Airbnb</b><strong>DT Bellevue Suite</strong><p>Bellevue 市中心 · 独立房间 · 带独立卫浴<br>1 张大床（Queen）· 独立卫生间<br>房东：Alice · 超赞房东 · 评分 4.99 ★（251条评价）<br><br>入住：6月1日 · 退房：6月5日（共 4 晚）<br><br><a href="https://www.airbnb.com/rooms/696251275489345246?adults=2&check_in=2026-06-01&check_out=2026-06-05">查看 Airbnb 详情 →</a></p></div>
+    </div></div>
+  </div>
+</div></div>
+
+<!-- PAGE 7: SEA WEEK -->
+<div class="card-frame"><div class="card-inner">
+  <div class="pt">第五段 · 西雅图</div>
+  <div class="dc">
+    <div class="dh"><span class="dd">6月2 — 4日</span><span class="dw">周二 — 周四</span><span class="dt t-sea">Bellevue</span></div>
+    <div class="ev"><div class="et">3天</div><div class="eb"><div class="en">在西雅图 / Bellevue 游玩</div><div class="ed">住在 Bellevue 的 Airbnb 民宿<br>Aspen 带你们逛西雅图市区、湖景、公园、吃饭……<br>具体安排到了再定，不着急</div>
+      <div class="nt"><b>💡 白天 Aspen 上班</b><p>工作日白天 Aspen 需要上班，智怡陪你们玩。晚上大家一起。</p></div>
+    </div></div>
+  </div>
+</div></div>
+
+<!-- PAGE 8: RETURN -->
+<div class="card-frame"><div class="card-inner">
+  <div class="pt">第六段 · 回程</div>
+  <div class="dc">
+    <div class="dh"><span class="dd">6月5日</span><span class="dw">周五</span><span class="dt t-home">回上海</span></div>
+    <div class="ev"><div class="et"></div><div class="eb"><div class="en">Airbnb 退房，飞回上海</div><div class="ed">Aspen 送你们去机场<br>航班确认后会更新具体时间</div>
+      <div class="fl"><div class="fr"><span class="fc">SEA</span><span class="fa">✈ ——→</span><span class="fc">PVG</span></div><div class="fi">西雅图 → 上海<br>航班确认后会更新<br><br><a href="https://www.google.com/travel/flights/search?tfs=CBwQAhopEgoyMDI2LTA2LTA1agwIAhIIL20vMGQ5anFyDAgCEggvbS8wNndzZkABSAFwAYIBCwj___________8BQAFIAZgBAQ&hl=en">在 Google Flights 查看 →</a></div></div>
+    </div></div>
+  </div>
+</div></div>
+
+<!-- PAGE 9: INFO -->
+<div class="card-frame"><div class="card-inner">
+  <div class="pt">重要信息</div>
+  <div class="ic"><h3>🛂 全程安排</h3>
+    <div class="ir"><span class="il">谁陪你们</span><span class="iv">Aspen + 智怡 全程陪同</span></div>
+    <div class="ir"><span class="il">语言</span><span class="iv">全程有人翻译</span></div>
+    <div class="ir"><span class="il">行李</span><span class="iv">带好护照和签证</span></div>
+    <div class="ir"><span class="il">天气</span><span class="iv">亚特兰大热 · 西雅图凉爽</span></div>
+  </div>
+  <div class="ic"><h3>✈️ 航班汇总</h3>
+    <div class="ir"><span class="il">5/28 LAX→ATL</span><span class="iv">DL 528 · 11:45am</span></div>
+    <div class="ir"><span class="il">6/1 ATL→SEA</span><span class="iv">Alaska · 傍晚</span></div>
+    <div class="ir"><span class="il">6/5 SEA→PVG</span><span class="iv">待定</span></div>
+  </div>
+  <div class="ic"><h3>🏠 住宿汇总</h3>
+    <div class="ir"><span class="il">5/28–6/1 亚特兰大</span><span class="iv">Airbnb · 4晚</span></div>
+    <div class="ir"><span class="il">6/1–6/5 Bellevue</span><span class="iv">Airbnb · 4晚</span></div>
+  </div>
+  <div class="ic"><h3>📱 紧急联系</h3>
+    <div class="ir"><span class="il">Aspen</span><span class="iv">随时微信联系</span></div>
+    <div class="ir"><span class="il">智怡</span><span class="iv">随时微信联系</span></div>
+  </div>
+  <div style="text-align:center;padding:20px 0 0;font-size:12px;color:var(--light);line-height:1.8">有任何问题随时问 Aspen 和智怡 ❤️</div>
+</div></div>
+
+    </div>
+  </div>
+  <div class="dots" id="ds"></div>
+</div>
+
+<script>
+const tk=document.getElementById('tk'),dk=document.getElementById('dk'),ds=document.getElementById('ds'),pn=document.getElementById('pn');
+const N=tk.children.length;let c=0,sx=0,dx=0,dr=false;
+for(let i=0;i<N;i++){const d=document.createElement('div');d.className='dot'+(i===0?' on':'');ds.appendChild(d)}
+const dots=[...ds.children];
+function go(i){c=Math.max(0,Math.min(N-1,i));tk.style.transform=`translateX(-${c*100}%)`;dots.forEach((d,j)=>d.className=j===c?'dot on':'dot');pn.textContent=`${c+1} / ${N}`}
+dk.addEventListener('touchstart',e=>{if(e.touches.length!==1)return;sx=e.touches[0].clientX;dx=0;dr=true;tk.classList.add('dragging')},{passive:true});
+dk.addEventListener('touchmove',e=>{if(!dr)return;dx=e.touches[0].clientX-sx;tk.style.transform=`translateX(${-c*dk.offsetWidth+dx}px)`},{passive:true});
+dk.addEventListener('touchend',()=>{if(!dr)return;dr=false;tk.classList.remove('dragging');const t=dk.offsetWidth*.2;if(dx<-t)go(c+1);else if(dx>t)go(c-1);else go(c)});
+document.addEventListener('keydown',e=>{if(e.key==='ArrowRight')go(c+1);if(e.key==='ArrowLeft')go(c-1)});
+</script>
+</body>
+</html>
