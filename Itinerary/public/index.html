@@ -65,20 +65,32 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans SC',-apple-system,'
 .install-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:14px 0;margin-top:20px;border:1.5px solid var(--border);border-radius:12px;background:var(--card);font-family:inherit;font-size:14px;font-weight:500;color:var(--text);cursor:pointer;transition:background .2s}
 .install-btn:active{background:#F0EEE9}
 .install-btn svg{flex-shrink:0}
-/* Install overlay — dark scrim + pointer to Safari share button */
-.install-overlay{position:fixed;inset:0;z-index:999;background:rgba(0,0,0,.65);display:flex;flex-direction:column;align-items:center;justify-content:flex-end;opacity:0;pointer-events:none;transition:opacity .25s}
-.install-overlay.show{opacity:1;pointer-events:auto}
-.install-hint{display:flex;flex-direction:column;align-items:center;padding:0 24px 20px;max-width:360px}
-.install-hint-text{color:#fff;font-size:15px;font-weight:500;text-align:center;line-height:1.6;margin-bottom:14px}
-.install-hint-text strong{font-weight:600}
-.install-hint-share{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center}
-.install-arrow{color:#fff;animation:bounce-down 1.2s ease-in-out infinite;margin-bottom:8px}
+/* Walkthrough overlay */
+.wt-overlay{position:fixed;inset:0;z-index:999;background:rgba(0,0,0,.75);opacity:0;pointer-events:none;transition:opacity .25s;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.wt-overlay.show{opacity:1;pointer-events:auto}
+.wt-close{position:fixed;top:calc(16px + var(--safe-top));right:16px;z-index:1001;width:36px;height:36px;border-radius:50%;border:none;background:rgba(255,255,255,.18);color:#fff;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.wt-step{display:none;flex-direction:column;align-items:center;padding:0 32px;max-width:360px;text-align:center}
+.wt-step.active{display:flex}
+/* Step icon circle */
+.wt-icon{width:80px;height:80px;border-radius:50%;background:rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;margin-bottom:24px}
+.wt-icon svg{width:40px;height:40px}
+.wt-title{color:#fff;font-size:18px;font-weight:600;margin-bottom:10px}
+.wt-desc{color:rgba(255,255,255,.75);font-size:14px;line-height:1.7;margin-bottom:28px}
+.wt-desc strong{color:#fff;font-weight:600}
+.wt-next{width:100%;padding:15px;border:none;border-radius:12px;background:#fff;color:var(--text);font-family:inherit;font-size:15px;font-weight:600;cursor:pointer}
+.wt-next:active{opacity:.85}
+.wt-copy{width:100%;padding:15px;border:1.5px solid rgba(255,255,255,.3);border-radius:12px;background:transparent;color:#fff;font-family:inherit;font-size:14px;font-weight:500;cursor:pointer;margin-bottom:12px;transition:border-color .2s,background .2s}
+.wt-copy.copied{border-color:var(--green);background:rgba(45,139,85,.2)}
+.wt-dots{display:flex;gap:8px;margin-bottom:32px}
+.wt-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.25);transition:background .3s}
+.wt-dot.on{background:#fff}
+/* Step 3: arrow pointing down to Safari bar */
+.wt-bottom{position:fixed;bottom:0;left:0;right:0;display:none;flex-direction:column;align-items:center;padding:0 32px 20px}
+.wt-bottom.active{display:flex}
+.wt-bottom .wt-title{margin-bottom:8px}
+.wt-bottom .wt-desc{margin-bottom:16px}
+.wt-bounce{animation:bounce-down 1.2s ease-in-out infinite}
 @keyframes bounce-down{0%,100%{transform:translateY(0)}50%{transform:translateY(8px)}}
-/* Safari-not-detected banner */
-.install-safari-msg{background:#fff;border-radius:16px;padding:20px 24px;margin:0 20px 24px;text-align:center;max-width:360px}
-.install-safari-msg p{font-size:14px;line-height:1.6;color:var(--text);margin:0}
-.install-safari-msg strong{font-weight:600}
-.install-close-x{position:fixed;top:calc(16px + var(--safe-top));right:16px;z-index:1000;width:36px;height:36px;border-radius:50%;border:none;background:rgba(255,255,255,.2);color:#fff;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center}
 .swipe-hint{text-align:center;margin-top:24px;font-size:12px;color:var(--light);animation:pulse 2s ease-in-out infinite}
 @keyframes pulse{0%,100%{opacity:.4}50%{opacity:1}}
 
@@ -368,38 +380,85 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans SC',-apple-system,'
   <div class="dots" id="ds"></div>
 </div>
 
-<!-- Install overlay -->
-<div class="install-overlay" id="installOverlay" onclick="if(event.target===this)closeInstall()">
-  <button class="install-close-x" onclick="closeInstall()">x</button>
-  <!-- iOS Safari: arrow pointing to share button -->
-  <div class="install-hint" id="iosHint" style="display:none">
-    <div class="install-hint-text">点击下方 Safari 的<br><strong>分享按钮</strong>，然后选择<br><strong>"添加到主屏幕"</strong></div>
-    <div class="install-hint-share"><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M11 2v13M7 6l4-4 4 4" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 13v5a2 2 0 002 2h10a2 2 0 002-2v-5" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg></div>
-    <svg class="install-arrow" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 4v14M6 14l6 6 6-6" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+<!-- Install walkthrough overlay -->
+<div class="wt-overlay" id="wtOverlay">
+  <button class="wt-close" onclick="closeWt()">x</button>
+
+  <!-- Step 0: Not in Safari — copy link -->
+  <div class="wt-step" id="wtStep0">
+    <div class="wt-icon"><svg viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="15" stroke="#fff" stroke-width="2"/><path d="M14 20h12M20 14v12" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg></div>
+    <div class="wt-title">先用 Safari 打开</div>
+    <div class="wt-desc">只有 <strong>Safari</strong> 才能安装到主屏幕<br>点下方复制链接，然后打开 Safari 粘贴</div>
+    <button class="wt-copy" id="wtCopy" onclick="copyLink()">复制链接</button>
+    <button class="wt-next" onclick="closeWt()">知道了</button>
   </div>
-  <!-- Not Safari -->
-  <div class="install-safari-msg" id="notSafariHint" style="display:none">
-    <p>请用 <strong>Safari</strong> 打开此页面，<br>才能添加到主屏幕</p>
+
+  <!-- Step 1: Tap share button -->
+  <div class="wt-step" id="wtStep1">
+    <div class="wt-dots"><span class="wt-dot on"></span><span class="wt-dot"></span><span class="wt-dot"></span></div>
+    <div class="wt-icon"><svg viewBox="0 0 40 40" fill="none"><path d="M20 6v20M14 12l6-6 6 6" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 22v10a3 3 0 003 3h18a3 3 0 003-3V22" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/></svg></div>
+    <div class="wt-title">第一步：点分享</div>
+    <div class="wt-desc">点击 Safari 底部工具栏中间的<br><strong>分享按钮</strong>（方框+箭头图标）</div>
+    <button class="wt-next" onclick="wtGo(2)">下一步</button>
+  </div>
+
+  <!-- Step 2: Find "Add to Home Screen" -->
+  <div class="wt-step" id="wtStep2">
+    <div class="wt-dots"><span class="wt-dot"></span><span class="wt-dot on"></span><span class="wt-dot"></span></div>
+    <div class="wt-icon"><svg viewBox="0 0 40 40" fill="none"><rect x="8" y="8" width="24" height="24" rx="5" stroke="#fff" stroke-width="2.5"/><path d="M14 20h12M20 14v12" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/></svg></div>
+    <div class="wt-title">第二步：添加到主屏幕</div>
+    <div class="wt-desc">在弹出的菜单里向下滑动<br>找到 <strong>"添加到主屏幕"</strong> 并点击</div>
+    <button class="wt-next" onclick="wtGo(3)">下一步</button>
+  </div>
+
+  <!-- Step 3: Tap "Add" -->
+  <div class="wt-step" id="wtStep3">
+    <div class="wt-dots"><span class="wt-dot"></span><span class="wt-dot"></span><span class="wt-dot on"></span></div>
+    <div class="wt-icon"><svg viewBox="0 0 40 40" fill="none"><path d="M10 22l7 7L30 13" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <div class="wt-title">第三步：点"添加"</div>
+    <div class="wt-desc">点右上角 <strong>"添加"</strong> 按钮<br>就像 App 一样出现在主屏幕了</div>
+    <button class="wt-next" onclick="closeWt()">完成</button>
   </div>
 </div>
 
 <script>
-// Install logic
+// Install walkthrough logic
 let deferredPrompt=null;
 window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e});
 
-function openInstall(){
-  // Android/Chrome: use native prompt if available
-  if(deferredPrompt){deferredPrompt.prompt();return}
+function isSafariBrowser(){
   const ua=navigator.userAgent;
-  const isIOS=/iPad|iPhone|iPod/.test(ua)||(/Macintosh/.test(ua)&&'ontouchend' in document);
-  const isSafari=/Safari/.test(ua)&&!/CriOS|FxiOS|OPiOS|EdgiOS|Chrome/.test(ua);
-  const overlay=document.getElementById('installOverlay');
-  document.getElementById('iosHint').style.display=(isIOS&&isSafari)?'flex':'none';
-  document.getElementById('notSafariHint').style.display=(isIOS&&!isSafari)||(!isIOS)?'block':'none';
+  return /Safari/.test(ua)&&!/CriOS|FxiOS|OPiOS|EdgiOS|Chrome/.test(ua);
+}
+
+function openInstall(){
+  if(deferredPrompt){deferredPrompt.prompt();return}
+  const overlay=document.getElementById('wtOverlay');
+  // Reset all steps
+  for(let i=0;i<=3;i++){const s=document.getElementById('wtStep'+i);if(s)s.classList.remove('active')}
+  // Show step 0 (not Safari) or step 1 (Safari)
+  if(isSafariBrowser()){
+    document.getElementById('wtStep1').classList.add('active');
+  }else{
+    document.getElementById('wtStep0').classList.add('active');
+  }
   overlay.classList.add('show');
 }
-function closeInstall(){document.getElementById('installOverlay').classList.remove('show')}
+
+function wtGo(step){
+  for(let i=0;i<=3;i++){const s=document.getElementById('wtStep'+i);if(s)s.classList.remove('active')}
+  document.getElementById('wtStep'+step).classList.add('active');
+}
+
+function closeWt(){document.getElementById('wtOverlay').classList.remove('show')}
+
+function copyLink(){
+  const btn=document.getElementById('wtCopy');
+  navigator.clipboard.writeText(window.location.href).then(()=>{
+    btn.textContent='已复制';btn.classList.add('copied');
+    setTimeout(()=>{btn.textContent='复制链接';btn.classList.remove('copied')},2000);
+  });
+}
 
 // Hide install button if already in standalone mode
 if(window.navigator.standalone||window.matchMedia('(display-mode:standalone)').matches){
